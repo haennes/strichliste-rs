@@ -1,4 +1,31 @@
 body {
 	font-family: sans-serif;
 	text-align: center;
+
+	.users {
+		display: grid;
+
+		a {
+			text-decoration: none;
+			color: black;
+		}
+
+		grid-gap: 10px;
+
+		grid-template-columns: repeat(auto-fill, 100px);
+
+		.user {
+			display: flex;
+			flex-direction: column;
+
+			background-color: grey;
+			padding: 5px;
+
+			border-radius: 25px;
+
+			.nickname {
+				font-weight: bold;
+			}
+		}
+	}
 }
