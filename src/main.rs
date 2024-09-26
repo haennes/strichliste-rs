@@ -7,6 +7,14 @@ async fn main() {
     use strichliste_rs::app::*;
     use strichliste_rs::fileserv::file_and_error_handler;
 
+    use crate::app::ssr::db;
+    use crate::app::*;
+
+    let mut conn = db().await.expect("couln't connect to DB");
+    if let Err(e) = sqlx::migrate!().run(&mut conn).await {
+        eprintln!("{e:?}");
+    }
+
     // Setting get_configuration(None) means we'll be using cargo-leptos's env values
     // For deployment these variables are:
     // <https://github.com/leptos-rs/start-axum#executing-a-server-on-a-remote-machine-without-the-toolchain>
