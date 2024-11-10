@@ -13,3 +13,6 @@ end2end/playwright-report/
 playwright/.cache/
 .idea/
 .sass-cache/
+
+#PDF files from typ
+*.pdf
