@@ -12,18 +12,26 @@ use std::hash::Hash;
 #[cfg(feature = "ssr")]
 pub mod ssr {
     use leptos::server_fn::ServerFnError;
-    use sqlx::postgres::{PgPool, PgPoolOptions};
+    use sqlx::postgres::{PgConnectOptions, PgPool, PgPoolOptions};
+    use sqlx::ConnectOptions;
     use sqlx::Pool;
 
     pub async fn db() -> Result<PgPool, ServerFnError> {
         Ok(PgPoolOptions::new()
             .max_connections(5)
-            .connect("postgres://strichliste-rs@localhost/strichliste-rs")
+            .connect("postgres://strichliste-rs:secret@localhost/strichliste-rs")
             .await?)
+        //let opts = PgConnectOptions::new()
+        //    .socket("/var/lib/postgresql")
+        //    .username("strichliste-rs")
+        //    .password("secret")
+        //    .database("strichliste-rs");
+        //Ok(PgPool::connect_with(opts).await?)
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, sqlx::FromRow)]
+#[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
 pub struct User {
     id: i32,
     name: String,
@@ -39,13 +47,13 @@ struct UserParam {
 #[server(GetUsers)]
 pub async fn get_users() -> Result<Vec<User>, ServerFnError> {
     use self::ssr::*;
-    use futures_util::stream::TryStreamExt;
+    use futures_util::TryStreamExt;
 
     let mut users = Vec::<User>::new();
 
-    let mut conn = db().await?;
+    let conn = db().await?;
 
-    let mut rows = sqlx::query_as::<_, User>("select * from users").fetch(&mut conn);
+    let mut rows = sqlx::query_as::<_, User>("select * from users").fetch(&conn);
     while let Some(row) = rows.try_next().await? {
         users.push(row);
     }

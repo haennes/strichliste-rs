@@ -22,6 +22,7 @@ tracing = { version = "0.1", optional = true }
 http = "1"
 serde = { version = "1.0.210", features = ["derive", "serde_derive"] }
 sqlx = { version = "0.8.2", features = ["runtime-tokio", "postgres"], optional = true }
+futures-util = { version = "0.3.31", optional = true}
 
 [features]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
@@ -35,7 +36,8 @@ ssr = [
     "leptos_meta/ssr",
     "leptos_router/ssr",
     "dep:tracing",
-    "dep:sqlx"
+    "dep:sqlx",
+    "dep:futures-util"
 ]
 
 # Defines a size-optimized profile for the WASM bundle in release mode

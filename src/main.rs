@@ -1,5 +1,5 @@
-#[cfg(feature = "ssr")]
 #[tokio::main]
+#[cfg(feature = "ssr")]
 async fn main() {
     use axum::Router;
     use leptos::*;
@@ -7,11 +7,11 @@ async fn main() {
     use strichliste_rs::app::*;
     use strichliste_rs::fileserv::file_and_error_handler;
 
-    use crate::app::ssr::db;
-    use crate::app::*;
+    use strichliste_rs::app::ssr::db;
+    use strichliste_rs::app::*;
 
     let mut conn = db().await.expect("couln't connect to DB");
-    if let Err(e) = sqlx::migrate!().run(&mut conn).await {
+    if let Err(e) = sqlx::migrate!().run(&conn).await {
         eprintln!("{e:?}");
     }
 
