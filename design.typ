@@ -88,7 +88,7 @@
 #let coin(c) = circle(radius: coin_height/2)[
   #set align(center + horizon)
   #c€
-];year: int,month: int,day: int,hour: int,minute: int,second: int,
+];
 #let bank_note(n) = box(height:coin_height, width: 2*coin_height, stroke: 1pt)[
   #set align(center + horizon)
   #n€
