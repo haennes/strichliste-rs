@@ -23,9 +23,13 @@ http = "1"
 serde = { version = "1.0.210", features = ["derive", "serde_derive"] }
 sqlx = { version = "0.8.2", features = ["runtime-tokio", "postgres"], optional = true }
 futures-util = { version = "0.3.31", optional = true}
+doubloon = { version = "0.2.0", features = ["serde"]}
+rust_decimal = "1.36.0"
 
 [features]
-hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
+hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate", "debug_users"]
+debug_users = []
+#common = ["debug_users"]
 ssr = [
     "dep:axum",
     "dep:tokio",
@@ -37,7 +41,8 @@ ssr = [
     "leptos_router/ssr",
     "dep:tracing",
     "dep:sqlx",
-    "dep:futures-util"
+    "dep:futures-util",
+    "debug_users"
 ]
 
 # Defines a size-optimized profile for the WASM bundle in release mode

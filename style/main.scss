@@ -2,30 +2,38 @@ body {
 	font-family: sans-serif;
 	text-align: center;
 
+}
 	.users {
 		display: grid;
 
-		a {
-			text-decoration: none;
-			color: black;
-		}
-
 		grid-gap: 10px;
 
-		grid-template-columns: repeat(auto-fill, 100px);
+		grid-template-columns: repeat(auto-fill, 200px);
 
-		.user {
-			display: flex;
-			flex-direction: column;
+	}
+.red {
+	color: red;
+}
+.green{
+	color: green;
+}
 
-			background-color: grey;
-			padding: 5px;
+.transplink {
+  text-decoration: none;
+  color: black;
+}
 
-			border-radius: 25px;
+.user {
 
-			.nickname {
-				font-weight: bold;
-			}
-		}
+	display: flex;
+	flex-direction: column;
+
+	background-color: grey;
+	padding: 5px;
+
+	border-radius: 25px;
+
+	.nickname {
+		font-weight: bold;
 	}
 }

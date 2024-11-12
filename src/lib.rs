@@ -1,7 +1,10 @@
 pub mod app;
 pub mod error_template;
+pub mod euros;
 #[cfg(feature = "ssr")]
 pub mod fileserv;
+pub mod users;
+pub use euros::*;
 
 #[cfg(feature = "hydrate")]
 #[wasm_bindgen::prelude::wasm_bindgen]

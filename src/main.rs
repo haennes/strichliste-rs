@@ -10,7 +10,7 @@ async fn main() {
     use strichliste_rs::app::ssr::db;
     use strichliste_rs::app::*;
 
-    let mut conn = db().await.expect("couln't connect to DB");
+    let conn = db().await.expect("couln't connect to DB");
     if let Err(e) = sqlx::migrate!().run(&conn).await {
         eprintln!("{e:?}");
     }

@@ -3,18 +3,15 @@ use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
 use serde;
-use serde::{Deserialize, Serialize};
-use server_fn::codec::FromReq;
 
-use std::hash::DefaultHasher;
-use std::hash::Hash;
+use super::users::*;
 
 #[cfg(feature = "ssr")]
 pub mod ssr {
     use leptos::server_fn::ServerFnError;
-    use sqlx::postgres::{PgConnectOptions, PgPool, PgPoolOptions};
-    use sqlx::ConnectOptions;
-    use sqlx::Pool;
+    use sqlx::postgres::{PgPool, PgPoolOptions};
+    //use sqlx::ConnectOptions;
+    //use sqlx::Pool;
 
     pub async fn db() -> Result<PgPool, ServerFnError> {
         Ok(PgPoolOptions::new()
@@ -28,49 +25,6 @@ pub mod ssr {
         //    .database("strichliste-rs");
         //Ok(PgPool::connect_with(opts).await?)
     }
-}
-
-#[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
-pub struct User {
-    id: i32,
-    name: String,
-    nickname: String,
-    money: i32,
-}
-
-#[derive(Params, PartialEq)]
-struct UserParam {
-    id: Option<i32>,
-}
-
-#[server(GetUsers)]
-pub async fn get_users() -> Result<Vec<User>, ServerFnError> {
-    use self::ssr::*;
-    use futures_util::TryStreamExt;
-
-    let mut users = Vec::<User>::new();
-
-    let conn = db().await?;
-
-    let mut rows = sqlx::query_as::<_, User>("select * from users").fetch(&conn);
-    while let Some(row) = rows.try_next().await? {
-        users.push(row);
-    }
-
-    Ok(users)
-}
-
-#[server(GetUser)]
-pub async fn get_user(user_id: i32) -> Result<User, ServerFnError> {
-    let user = User {
-        id: user_id,
-        name: String::from(format!("Test-{}", user_id)),
-        nickname: String::from(format!("Nick-{}", user_id)),
-        money: user_id,
-    };
-
-    Ok(user)
 }
 
 #[component]
@@ -99,7 +53,7 @@ pub fn App() -> impl IntoView {
         }>
             <main>
                 <Routes>
-                    <Route path="" view=HomePage/>
+                    <Route path="/" view=HomePage/>
                     <Route path="/:id" view=UserPage/>
                 </Routes>
             </main>
@@ -118,13 +72,13 @@ fn HomePage() -> impl IntoView {
             let:data
         >
             <div class="users">
-                {data.to_owned().unwrap().into_iter()
+                {
+                    data
+                        .to_owned()
+                        .unwrap_or_default()
+                        .into_iter()
                     .map(|user| view! {
-                        <A class="user" href=move || format!("{}", user.id)>
-                            <p class="nickname">{user.nickname}</p>
-                            <p class="user">{user.name}</p>
-                            <p calss="money">{user.money} "€"</p>
-                        </A>
+                        <UserTile user=create_signal(user).0 />
                     }).collect_view()
                 }
             </div>
@@ -134,10 +88,11 @@ fn HomePage() -> impl IntoView {
 
 #[component]
 fn UserPage() -> impl IntoView {
-    let param = use_params::<UserParam>();
-    let user_id =
-        move || param.with(|params| params.as_ref().map(|params| params.id).unwrap_or_default());
-    view! {
-        <p>"Hello User with id " {user_id} </p>
-    }
+    // let param = use_params::<UserParam>();
+    // let user_id =
+    //     move || param.with(|params| params.as_ref().map(|params| params.id).unwrap_or_default());
+    // view! {
+    //     <p>"Hello User with id " {user_id} </p>
+    // }
+    view! {}
 }
