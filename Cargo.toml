@@ -25,9 +25,10 @@ sqlx = { version = "0.8.2", features = ["runtime-tokio", "postgres"], optional =
 futures-util = { version = "0.3.31", optional = true}
 doubloon = { version = "0.2.0", features = ["serde"]}
 rust_decimal = "1.36.0"
+futures = "0.3"
 
 [features]
-hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate", "debug_users"]
+hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate", "debug_users", "dep:futures-util"]
 debug_users = []
 #common = ["debug_users"]
 ssr = [

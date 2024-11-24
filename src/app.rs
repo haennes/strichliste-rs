@@ -85,14 +85,3 @@ fn HomePage() -> impl IntoView {
         </Await>
     }
 }
-
-#[component]
-fn UserPage() -> impl IntoView {
-    // let param = use_params::<UserParam>();
-    // let user_id =
-    //     move || param.with(|params| params.as_ref().map(|params| params.id).unwrap_or_default());
-    // view! {
-    //     <p>"Hello User with id " {user_id} </p>
-    // }
-    view! {}
-}

@@ -1,5 +1,9 @@
-use leptos::{component, server, view, IntoView, Params, ReadSignal, ServerFnError, SignalGet};
-use leptos_router::A;
+// use leptos::{
+//     component, create_memo, create_signal, server, view, with, IntoView, Params, ReadSignal,
+//     ServerFnError, SignalGet, SignalWith,
+// };
+use leptos::*;
+use leptos_router::{use_params, Params, A};
 use serde::{Deserialize, Serialize};
 
 use crate::{Euros, MoneyColor};
@@ -24,7 +28,7 @@ impl From<DBUser> for User {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
 pub struct User {
     pub(crate) id: i32,
     pub(crate) name: String,
@@ -32,6 +36,21 @@ pub struct User {
     pub(crate) money: Euros,
 }
 
+impl User {
+    fn error() -> User {
+        User {
+            id: 0,
+            name: "FAILURE".to_string(),
+            nickname: "FAILURE".to_string(),
+            money: 0.into(),
+        }
+    }
+}
+
+#[derive(Params, PartialEq)]
+struct UserParam {
+    id: Option<i32>,
+}
 #[component]
 pub(crate) fn UserTile(#[prop(into)] user: ReadSignal<User>) -> impl IntoView {
     let money = user.get().money;
@@ -44,29 +63,95 @@ pub(crate) fn UserTile(#[prop(into)] user: ReadSignal<User>) -> impl IntoView {
     }
 }
 
+pub(crate) fn UserPage() -> impl IntoView {
+    let param = use_params::<UserParam>();
+
+    let user_id = move || {
+        param.with(|params| {
+            params
+                .as_ref()
+                .map(|params| params.id.unwrap())
+                .unwrap_or_default()
+        })
+    };
+    let user = move || get_user(user_id());
+    let get_user_data =
+        |user_data: &Result<User, ServerFnError>| user_data.clone().unwrap_or(User::error());
+    view! {
+        <Await
+          future = move || user()
+          let:user_data
+        >
+
+        <div>
+          <p class="username_userpage">{get_user_data(user_data).nickname}</p>
+          <div class="bar">
+            // <p class="bar_member"> {get_user_data(user_data).money.to_string()}</p>
+            // <p class="bar_member"> {get_user_data(user_data).money.to_string()}</p>
+            <div class="bar_member" style="width:20%">
+              <MoneyColor money=get_user_data(user_data).money/>
+            </div>
+            <div class="bar_member" style="min-width:20%">
+              <A href= "payout" class = "transplink">
+              Auszahlen
+              </A>
+            </div>
+            <div class="bar_member" style="min-width:20%">
+              <A href= "transfer" class = "transplink">
+              Überweisen
+              </A>
+            </div>
+            <div class="bar_member" style="min-width:20%">
+              <A href= "deposit" class = "transplink">
+              Überweisen
+              </A>
+            </div>
+          </div>
+        </div>
+        </Await>
+                // <p>"Hello User with id " {user_id} </p>
+           //<p class="username_userpage">{move || get_user(user_id).name}</p>
+           // <p class="username_userpage">{ get_user(user_id().unwrap()).await.unwrap().name}</p>
+
+           // <p class="username_userpage">{  move || {get_user(user_id.unwrap()).unwrap().name}}</p>
+          // <p class="username_userpage">{move || user.nickname}</p>
+          // <p class="username_userpage">{move  || block_on(user()).unwrap().name} </p>
+    }
+}
+
 #[cfg(feature = "debug_users")]
 pub async fn get_users() -> Result<Vec<User>, ServerFnError> {
-    Ok([
-        User {
-            id: 1,
-            name: "a".into(),
-            nickname: "na".into(),
-            money: 300.into(),
-        },
-        User {
-            id: 1,
-            name: "b".into(),
-            nickname: "nb".into(),
-            money: 450.into(),
-        },
-        User {
-            id: 1,
-            name: "c".into(),
-            nickname: "nc".into(),
-            money: (-650).into(),
-        },
-    ]
-    .into())
+    let mut v = Vec::new();
+    for i in 0..10 {
+        v.push(User {
+            id: i,
+            name: format!("User {i}"),
+            nickname: format!("Nickname {i}"),
+            money: (50 * i * (-1 as i32).pow(i as u32)).into(),
+        })
+    }
+    Ok(v)
+    // Ok([
+    //     User {
+    //         id: 1,
+    //         name: "a".into(),
+    //         nickname: "na".into(),
+    //         money: 300.into(),
+    //     },
+    //     User {
+    //         id: 1,
+    //         name: "b".into(),
+    //         nickname: "nb".into(),
+    //         money: 450.into(),
+    //     },
+    //     User {
+    //         id: 1,
+    //         name: "c".into(),
+    //         nickname: "nc".into(),
+    //         money: (-650).into(),
+    //     },
+    // ]
+    // .into())
 }
 
 #[cfg_attr(not(feature = "debug_users"), server(GetUsers))]

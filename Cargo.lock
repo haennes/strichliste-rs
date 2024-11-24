@@ -2633,6 +2633,7 @@ dependencies = [
  "axum",
  "console_error_panic_hook",
  "doubloon",
+ "futures",
  "futures-util",
  "http",
  "leptos",
